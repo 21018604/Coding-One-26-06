@@ -1,0 +1,261 @@
+CODE
+
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- 引入Three.js库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/109/three.min.js"></script>
+    <!-- 设置视口属性 -->
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <style>
+        /* 设置页面样式 */
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+
+        #container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #text-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            font-size: 24px;
+            font-weight: bold;
+            font-family: 'Heavy Heap', cursive;
+        }
+      
+       #info-container {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            font-family: Arial, sans-serif;
+            color: white;
+            text-shadow: 2px 2px 4px black;
+            pointer-events: none;
+      }
+    </style>
+</head>
+<body>
+<div id="container"></div>
+<div id="text-container">
+    <h1 style="position: absolute; top: 20%; left: 50%; transform: translateX(-50%); font-size: 100px; font-weight: bold; font-family: Arial, sans-serif; color: white; pointer-events: none;">Psychedelic Festival</h1>
+</div>
+  
+<div id="info-container" style="position: fixed; top: 30%; left: 50%; transform: translate(-50%, -50%); text-align: center; width: 100%;">
+    <h2 style="font-size: 85px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: bold; font-family: Arial, sans-serif; color: rgba(255, 0, 0, 0.7); text-shadow: 2px 2px 4px blue; pointer-events: none;">🫧Psychedelic🤘🏻Festival🫧</h2>
+</div>
+  
+  <div id = "detail-container" style="position: absolute; top: 95%; left: 50%; transform: translate(-50%, -50%); text-align: center;" >
+    <p style="color: rgba(255, 0, 0, 0.7); text-shadow: 1px 1px 2px blue;">Time: 32.13/2028💫Location: Amongst the Dreams</p>
+    
+</div>
+
+<div id="band-container" style="position: absolute; top: 58%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+    <ul style="list-style-type: none;">
+        <li style="color: red; opacity: 0.6;">The 13th Floor Elevators</li>
+        <li style="color: red; opacity: 0.6;">The Jimi Hendrix Experience</li>
+        <li style="color: red; opacity: 0.6;">Pink Floyd</li>
+        <li style="color: red; opacity: 0.6;">Cream</li>
+        <li style="color: red; opacity: 0.6;">The Doors</li>
+        <li style="color: red; opacity: 0.6;">Grateful Dead</li>
+        <li style="color: red; opacity: 0.6;">Jefferson Airplane</li>
+        <li style="color: red; opacity: 0.6;">King Gizzard &amp; the Lizard Wizard</li>
+        <li style="color: red; opacity: 0.6;">Tame Impala</li>
+        <li style="color: red; opacity: 0.6;">Psychedelic Porn Crumpets</li>
+        <li style="color: red; opacity: 0.6;">Pink Floyd</li>
+        <li style="color: red; opacity: 0.6;">The Beatles</li>
+        <li style="color: red; opacity: 0.6;">The Flaming Lips</li>
+        <li style="color: red; opacity: 0.6;">Os Mutantes</li>
+        <li style="color: red; opacity: 0.6;">Hawkwind</li>
+        <li style="color: red; opacity: 0.6;">Gong</li>
+        <li style="color: red; opacity: 0.6;">The Electric Prunes</li>
+        <li style="color: red; opacity: 0.6;">The Rolling Stones</li>
+        <li style="color: red; opacity: 0.6;">Nirvana</li>
+        <li style="color: red; opacity: 0.6;">Tame Impala</li>
+    </ul>
+</div>
+
+
+
+    <!-- 定义顶点着色器 -->
+    <script id="vertexShader" type="x-shader/x-vertex">
+        void main() { gl_Position = vec4( position, 1.0 ); }
+    </script>
+
+    <!-- 定义片段着色器 -->
+    <script id="fragmentShader" type="x-shader/x-fragment">
+precision mediump float;
+uniform vec2 resolution;
+uniform vec2 mouse;
+uniform highp float time;
+
+#define M_PI 3.14159265358979323846
+
+// 返回一个垂直于函数定义的线段
+float line(vec2 normalised_Coordinate, float funct) { return step(funct, normalised_Coordinate.y) - step(funct, normalised_Coordinate.y - 0.05);
+        }
+
+        // 返回一个平滑的线段
+        float smoothline(vec2 normalised_Coordinate, float funct, float height) {
+            return smoothstep(funct, funct + height / 2., normalised_Coordinate.y) - smoothstep(funct, funct + height / 2., normalised_Coordinate.y - height);
+        }
+
+        void main() {
+            vec2 pos = gl_FragCoord.xy / resolution;
+
+            // 创建三个不同的波纹效果
+            float patternA = sin(pos.x * 10.0 + time * 2.0) + sin(pos.y * 20.0 + time * 1.0);
+            float patternB = sin(pos.x * 5.0 + time * 3.0) + sin(pos.y * 15.0 + time * 2.0);
+            float patternC = sin(pos.x * 8.0 + time * 1.5) + sin(pos.y * 12.0 + time * 0.5);
+
+            // 使用smoothline函数创建三个平滑的线段
+            float lineA = smoothline(pos, 0.5 + patternA * 0.5, pos.x);
+            float lineB = smoothline(pos, 0.5 + patternB * 0.5, 1.0 - pos.x);
+            float lineC = smoothline(pos, 0.5 + patternC * 0.5, 1.0);
+
+            // 创建三种颜色
+            vec3 colorA = vec3(lineA * abs(sin(time)), 0., 0.);
+            vec3 colorB = vec3(0., 0., lineB);
+            vec3 colorC = vec3(lineC, 0.0, lineC);
+
+            // 根据鼠标X轴值控制颜色变化
+            vec3 color = vec3(mouse.x, 0.0, 1.0 - mouse.x) * (colorA + colorB + colorC);
+
+            // 根据鼠标Y轴值控制透明度
+            float alpha = mouse.y;
+
+            // 最终颜色由三种颜色和时间值的正弦函数计算得出
+            vec3 finalColor = vec3(sin(time), sin(time + 2.0), sin(time + 4.0)) * color;
+
+            // 设置片段颜色和透明度
+            gl_FragColor = vec4(finalColor, alpha);
+        }
+    </script>
+
+    <script>
+        var container, camera, scene, renderer;
+        var uniforms;
+        var textContainer;
+        var guests = [
+            '💙The 13th Floor Elevators',
+            'The Jimi Hendrix Experience🥏',
+            'Pink Floyd',
+            'Cream🩵',
+            'The Doors〽️',
+            'Grateful Dead🤎',
+            'Jefferson Airplane🛝🪁',
+            '🗻King Gizzard & the Lizard Wizard',
+            'Tame Impala💵',
+            '💎Psychedelic Porn Crumpets',
+            '👁️‍Pink Floyd',
+            'The Beatles🔮',
+            'The Flaming Lips⛓️',
+            '🧿Os Mutantes',
+            'Hawkwind🔳',
+            'Gong🎴',
+            'The Electric Prunes💊',
+            '🪬The Rolling Stones',
+            'Nirvana🦠',
+            '🧷Tame Impala'
+        ];
+
+        init();
+        animate();
+
+        function init() {
+            container = document.getElementById('container');
+            textContainer = document.getElementById('text-container');
+        
+
+            camera = new THREE.Camera();
+            camera.position.z = 1;
+
+            scene = new THREE.Scene();
+
+            var geometry = new THREE.PlaneBufferGeometry(10, 2);
+
+            // 定义着色器所需的uniforms
+            uniforms = {
+                time: { type: 'f', value: 1.0 },
+                resolution: { type: 'v2', value: new THREE.Vector2() },
+                mouse: { type: "v2", value: new THREE.Vector2() }
+            };
+
+            var material = new THREE.ShaderMaterial({
+                uniforms: uniforms,
+                vertexShader: document.getElementById('vertexShader').textContent,
+                fragmentShader: document.getElementById('fragmentShader').textContent
+            });
+
+            var mesh = new THREE.Mesh(geometry, material);
+            scene.add(mesh);
+
+            renderer = new THREE.WebGLRenderer();
+            renderer.setPixelRatio(window.devicePixelRatio);
+            container.appendChild(renderer.domElement);
+
+            onWindowResize();
+            window.addEventListener('resize', onWindowResize, false);
+            window.addEventListener('mousemove', onMouseMove, false);
+        }
+
+        function onWindowResize() {
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            uniforms.resolution.value.x = renderer.domElement.width;
+            uniforms.resolution.value.y = renderer.domElement.height;
+        }
+
+        function onMouseMove(event) {
+            var mouseX = (event.clientX / window.innerWidth) * 2 - 1;
+            var mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
+            uniforms.mouse.value.x = mouseX;
+            uniforms.mouse.value.y = mouseY;
+
+            // 根据鼠标位置设置文本颜色
+            var colorR = Math.abs(mouseX);
+            var colorG = Math.abs(mouseY);
+            var colorB = Math.abs(mouseX * mouseY);
+
+            textContainer.style.color = 'rgb(' + (colorR * 255) + ',' + (colorG * 255) + ',' + (colorB * 255) + ')';
+        }
+
+        var lastUpdateTime = Date.now();
+        var textUpdateInterval = 650; // 1秒
+
+        function animate() {
+            requestAnimationFrame(animate);
+            var now = Date.now();
+            if (now - lastUpdateTime >= textUpdateInterval) {
+                lastUpdateTime = now;
+                updateTextPosition();
+            }
+            render();
+        }
+
+        function render() {
+            uniforms.time.value += 0.01;
+            renderer.render(scene, camera);
+        }
+
+        function updateTextPosition() {
+            var textIndex = Math.floor(Math.random() * guests.length);
+            var text = guests[textIndex];
+            textContainer.textContent = text;
+            textContainer.style.left = Math.random() * (window.innerWidth - textContainer.offsetWidth) + 'px';
+            textContainer.style.top = Math.random() * (window.innerHeight - textContainer.offsetHeight) + 'px';
+
+            var fontSize = Math.floor(Math.random() * (90 - 5 + 1) + 15);
+            textContainer.style.fontSize = fontSize + 'px';
+        }
+    </script>
+</body>
+</html>
